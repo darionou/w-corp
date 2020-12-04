@@ -1,0 +1,46 @@
+service: weather-microservice
+custom:
+  myStage: ${opt:stage, "dev"}
+  myEnvironment:
+    ${file(myEnvironment.yml)}
+  prune:
+    automatic: true
+    number: 3
+
+package: 
+  exclude:
+    - 'node_modules/aws-sdk/**'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${self:custom.myStage}
+  tags:
+    DEVELOPER: darionou
+    VERSION: V0
+  region: ${self:custom.myEnvironment.REGION.${self:custom.myStage}}
+  environment:
+    REGION: ${self:custom.myEnvironment.REGION.${self:custom.myStage}}
+    OPENWEATHERMAP_KEY: ${self:custom.myEnvironment.OPENWEATHERMAP_KEY.${self:custom.myStage}}
+    DB: ${self:custom.myEnvironment.DB.${self:custom.myStage}}
+
+functions: 
+  retrieveWeatherHistory:
+    handler: handler.app
+    events:
+      - http:
+          path: /weather/average 
+          method: get
+          cors: true
+          
+  retrieveLiveWeather:
+    handler: handler.app 
+    events:
+      - http:
+          path: /weather/live
+          method: get
+          cors: true
+
+
+plugins:
+- serverless-offline 

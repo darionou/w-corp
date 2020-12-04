@@ -1,0 +1,11 @@
+# package directories
+node_modules
+
+# Serverless directories
+.serverless
+
+myEnvironment.yml
+.DS_Store
+.vscode
+*.myEnvironment
+
